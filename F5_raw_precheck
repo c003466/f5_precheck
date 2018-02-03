@@ -1,0 +1,102 @@
+#standard F5 prechecks
+---
+- name: RAW precheck commands
+  hosts: 192.168.1.64
+#  connection: local
+  gather_facts: false
+  tasks:
+    - name: run show sys software command
+      raw: "show sys software"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt > /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: show sys performance
+      raw: "show sys performance"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: show net interface
+      raw: "show net interface"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: show cm sync-status
+      raw: "show cm sync-status"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+
+    - name: Show sys failover
+      raw: "show sys failover "
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: show sys log 
+      raw: "run util bash -c 'tail -n 25 /var/log/ltm'"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: show sys clock 
+      raw: "run util bash -c date"
+      register: print_output
+    - debug: var=print_output.stdout_lines 
+
+    - name: save output to file
+      copy: content="{{ print_output.stdout_lines }}" dest="/var/tmp/output/{{ inventory_hostname }}.txt"
+      connection: local
+
+    - name: Create Complete File
+      raw: "cat /var/tmp/output/{{ inventory_hostname }}.txt >> /var/tmp/output/change-total.txt"
+      connection: local
+
+    - name: Transform Complete File
+      raw: "tr , '\n' < /var/tmp/output/change-total.txt > /var/tmp/output/change-complete-{{ CHANGENO }}.txt"
+      connection: local
